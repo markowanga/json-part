@@ -3,29 +3,14 @@ import json
 from json_part.parser import JsonPartParser
 
 JSON = """
-{
-    "glossary": {
-        "title": "example glossary",
-		"GlossDiv": {
-            "title": "S",
-			"GlossList": {
-                "GlossEntry": {
-                    "ID": "SGML",
-					"SortAs": "SGML",
-					"GlossTerm": "Standard Generalized Markup Language",
-					"Acronym": "SGML",
-					"Abbrev": "ISO 8879:1986",
-					"GlossDef": {
-                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
-						"GlossSeeAlso": ["GML", "XML"]
-                    },
-					"GlossSee": "markup"
-                }
-            }
-        }
-    }
-}""".strip()
-if __name__ == '__main__':
+{"glossary": {"title": "example glossary", "GlossDiv": {"title": "S", "GlossList": 
+{"GlossEntry": {"ID": "SGML", "SortAs": "SGML", "GlossTerm": "Standard Generalized Markup Language", 
+"Acronym": "SGML", "Abbrev": "ISO 8879:1986", "GlossDef": {"para": "A meta-markup language, 
+used to create markup languages such as DocBook.", "GlossSeeAlso": ["GML", "XML"]}, 
+"GlossSee": "markup"}}}}}
+
+""".strip()
+if __name__ == "__main__":
     TEST = "[1, 2, 3"
     print(JsonPartParser().parse(TEST))
     TEST = "[null, true, false, tr"
@@ -41,7 +26,8 @@ if __name__ == '__main__':
     print("#############")
     JSON = json.dumps(json.loads(JSON))
     for it in range(len(JSON)):
-        part = JSON[0:it + 1]
+        part = JSON[0 : it + 1]
         print(part)
         print(JsonPartParser().parse(part))
         print()
+    print()

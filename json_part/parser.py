@@ -1,9 +1,9 @@
 import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, TypeVar, Dict
+from typing import Any, Dict, TypeVar
 
-_T = TypeVar('_T')
+_T = TypeVar("_T")
 
 
 @dataclass
@@ -25,7 +25,7 @@ class ArrayParser(Parser):
         result = []
         temp_str = temp_str.strip()
         while temp_str:
-            if temp_str[0] == ']':
+            if temp_str[0] == "]":
                 temp_str = temp_str[1:].strip()  # skip ending ']'
                 break
             item_result = AnyParser().parse(temp_str)
@@ -33,7 +33,7 @@ class ArrayParser(Parser):
             temp_str = item_result.rest_of_string
             result.append(res)
             temp_str = temp_str.strip()
-            if temp_str.startswith(','):
+            if temp_str.startswith(","):
                 temp_str = temp_str[1:].strip()
         return ParserResult(result, temp_str)
 
@@ -44,7 +44,7 @@ class ObjectParser(Parser):
         result: Dict[str, Any] = {}
         temp_str = temp_str.strip()
         while temp_str:
-            if temp_str[0] == '}':
+            if temp_str[0] == "}":
                 temp_str = temp_str[1:]  # skip ending '}'
                 break
 
@@ -68,20 +68,20 @@ class ObjectParser(Parser):
 
             result[key] = value
             temp_str = temp_str.strip()
-            if temp_str.startswith(','):
+            if temp_str.startswith(","):
                 temp_str = temp_str[1:]
                 temp_str = temp_str.strip()
         return ParserResult(result, temp_str)
 
     def skip_colon(self, str_input: str) -> str:
         temp_str = str_input.strip()
-        if temp_str[0] != ':':
+        if temp_str[0] != ":":
             raise Exception("No ':' after key")
         temp_str = temp_str[1:]
         return temp_str.strip()
 
     def skip_possible_comma(self, str_input: str) -> str:
-        if str_input.startswith(','):
+        if str_input.startswith(","):
             return str_input[1:].strip()
         else:
             return str_input
@@ -90,13 +90,13 @@ class ObjectParser(Parser):
 class StringParser(Parser):
     def parse(self, str_input: str) -> ParserResult:
         end = str_input.find('"', 1)
-        while end != -1 and str_input[end - 1] == '\\':  # Handle escaped quotes
+        while end != -1 and str_input[end - 1] == "\\":  # Handle escaped quotes
             end = str_input.find('"', end + 1)
         if end == -1:
             # Return the incomplete string without the opening quote
             return ParserResult(str_input[1:], "")
-        str_val = str_input[:end + 1]
-        s = str_input[end + 1:]
+        str_val = str_input[: end + 1]
+        s = str_input[end + 1 :]
         return ParserResult(json.loads(str_val), s)
 
 
@@ -121,13 +121,17 @@ class NullParser(Parser):
 class NumberParser(Parser):
     def parse(self, str_input: str) -> ParserResult:
         i = 0
-        while i < len(str_input) and str_input[i] in '0123456789.-':
+        while i < len(str_input) and str_input[i] in "0123456789.-":
             i += 1
         num_str = str_input[:i]
         s = str_input[i:]
-        if not num_str or num_str.endswith('.') or num_str.endswith('-'):  # TODO
+        if not num_str or num_str.endswith(".") or num_str.endswith("-"):  # TODO
             return ParserResult(num_str, "")  # Return the incomplete number as is
-        num = float(num_str) if '.' in num_str or 'e' in num_str or 'E' in num_str else int(num_str)
+        num = (
+            float(num_str)
+            if "." in num_str or "e" in num_str or "E" in num_str
+            else int(num_str)
+        )
         return ParserResult(num, s)
 
 
@@ -140,15 +144,15 @@ class AnyParser(Parser):
     @staticmethod
     def find_parser(str_input: str) -> Parser:
         parsers: Dict[str, Parser] = {
-            '[': ArrayParser(),
-            '{': ObjectParser(),
+            "[": ArrayParser(),
+            "{": ObjectParser(),
             '"': StringParser(),
-            't': TrueParser(),
-            'f': FalseParser(),
-            'n': NullParser()
+            "t": TrueParser(),
+            "f": FalseParser(),
+            "n": NullParser(),
         }
         number_parser = NumberParser()
-        for c in '0123456789.-':
+        for c in "0123456789.-":
             parsers[c] = number_parser
         return parsers[str_input.strip()[0]]
 

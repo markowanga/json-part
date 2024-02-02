@@ -6,14 +6,24 @@ authors = ["Marcin Wątroba <markowanga@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-ijson = "^3.2.3"
+python = "^3.8"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.1.1"
 mypy = "^1.8.0"
 isort = "^5.13.2"
+poethepoet = "^0.24.4"
+
+
+[tool.poe.tasks]
+black = "black --check json_part"
+isort = "isort -c json_part"
+mypy = "mypy --strict json_part"
+black_fix = "black json_part"
+isort_fix = "isort json_part"
+before_mr = ['black', 'isort', 'mypy']
+
 
 [build-system]
 requires = ["poetry-core"]
