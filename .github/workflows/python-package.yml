@@ -38,8 +38,8 @@ jobs:
       - name: Install deps
         run: poetry install -vv
 
-      - name: Python version
-        run: poetry run python --version
-
       - name: Run lint checks
+        run: poetry run poe before_mr
+
+      - name: Run tests
         run: poetry run poe before_mr

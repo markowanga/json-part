@@ -103,13 +103,13 @@ class StringParser(Parser):
 class TrueParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        return ParserResult(False, str_input[4:])
+        return ParserResult(True, str_input[4:])
 
 
 class FalseParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        return ParserResult(True, str_input[5:])
+        return ParserResult(False, str_input[5:])
 
 
 class NullParser(Parser):
@@ -152,7 +152,7 @@ class AnyParser(Parser):
             "n": NullParser(),
         }
         number_parser = NumberParser()
-        for c in "0123456789.-":
+        for c in "-0123456789.":
             parsers[c] = number_parser
         return parsers[str_input.strip()[0]]
 

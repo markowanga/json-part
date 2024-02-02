@@ -14,15 +14,17 @@ black = "^24.1.1"
 mypy = "^1.8.0"
 isort = "^5.13.2"
 poethepoet = "^0.24.4"
+pytest = "^8.0.0"
 
 
 [tool.poe.tasks]
 black = "black --check json_part"
 isort = "isort -c json_part"
 mypy = "mypy --strict json_part"
+pytest = "pytest"
 black_fix = "black json_part"
 isort_fix = "isort json_part"
-before_mr = ['black', 'isort', 'mypy']
+before_mr = ['black', 'isort', 'mypy', 'pytest']
 
 
 [build-system]
