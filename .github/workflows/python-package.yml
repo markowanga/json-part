@@ -39,4 +39,4 @@ jobs:
         run: poetry install -vv
 
       - name: Run lint checks
-        run: poe before_mr
+        run: poetry run poe before_mr
