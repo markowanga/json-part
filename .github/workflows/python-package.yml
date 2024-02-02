@@ -6,6 +6,11 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
+  push:
+    branches: [ main, develop ]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
   schedule:
     - cron: '0 0 * * *'
 
