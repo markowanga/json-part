@@ -24,6 +24,7 @@ mypy = "mypy --strict json_part"
 pytest = "pytest"
 black_fix = "black json_part"
 isort_fix = "isort json_part"
+lint_check = ['black', 'isort', 'mypy']
 before_mr = ['black', 'isort', 'mypy', 'pytest']
 
 
