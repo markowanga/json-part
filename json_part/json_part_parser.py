@@ -1,9 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Tuple, TypeVar
-
-_T = TypeVar("_T")
+from typing import Any, Dict, Optional, Tuple
 
 
 @dataclass
