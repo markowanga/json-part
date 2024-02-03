@@ -7,6 +7,13 @@ OpenAI's Large Language Models (LLMs). By enabling the processing
 of partial JSON responses, `json-part` enhances the user experience
 by providing immediate, incremental results.
 
+Currently, there is no standard for loading such data,
+and the project has made many assumptions which, in my opinion,
+were correct. A fully generic, flexible solution was not prepared.
+The library code is simple and clear -- requests for contributions,
+or ideas submitted as an Issue, will be met with
+all efforts to create the best possible solution.
+
 ## Features
 
 - **Parse Incomplete JSON:** Effortlessly convert partial JSON
