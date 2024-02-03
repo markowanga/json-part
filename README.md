@@ -1,20 +1,20 @@
 # json-part
 
-`json-part` is a lightweight Python library designed to parse and 
-repair incomplete JSON strings. This library is particularly useful 
-for handling streaming JSON data, such as the responses from 
-OpenAI's Large Language Models (LLMs). By enabling the processing 
-of partial JSON responses, `json-part` enhances the user experience 
+`json-part` is a lightweight Python library designed to parse and
+repair incomplete JSON strings. This library is particularly useful
+for handling streaming JSON data, such as the responses from
+OpenAI's Large Language Models (LLMs). By enabling the processing
+of partial JSON responses, `json-part` enhances the user experience
 by providing immediate, incremental results.
 
 ## Features
 
-- **Parse Incomplete JSON:** Effortlessly convert partial JSON 
-- strings into usable Python dictionaries.
-- **Fix Incomplete JSON:** Automatically repair and close 
-- open JSON structures to prevent parsing errors.
-- **Stream-Friendly:** Ideal for applications that consume 
-- streaming JSON data, improving responsiveness and user interaction.
+- **Parse Incomplete JSON:** Effortlessly convert partial JSON
+  strings into usable Python dictionaries.
+- **Fix Incomplete JSON:** Automatically repair and close
+  open JSON structures to prevent parsing errors.
+- **Stream-Friendly:** Ideal for applications that consume
+  streaming JSON data, improving responsiveness and user interaction.
 
 ## Installation
 
@@ -26,8 +26,8 @@ pip install json-part
 
 ## Usage
 
-The `json-part` library is straightforward to use, with functions 
-to parse and fix incomplete JSON strings. Here's a quick 
+The `json-part` library is straightforward to use, with functions
+to parse and fix incomplete JSON strings. Here's a quick
 example to demonstrate its capabilities:
 
 ```python
@@ -50,12 +50,12 @@ if __name__ == '__main__':
 
 ## Contributing
 
-Contributions to `json-part` are welcome! 
-Whether it's reporting a bug, discussing improvements, 
-or submitting a pull request, all contributions 
+Contributions to `json-part` are welcome!
+Whether it's reporting a bug, discussing improvements,
+or submitting a pull request, all contributions
 help make `json-part` better for everyone.
 
 ## License
 
-`json-part` is released under the MIT License. 
+`json-part` is released under the MIT License.
 See the LICENSE file for more details.
