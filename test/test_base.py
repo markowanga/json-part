@@ -4,7 +4,6 @@ BIG_JSON_SAMPLE = """
 {"string":"wartość_tekstowa","number":123,"boolean":true,"null_value":null,
 "array":[1,"dwie",false,{"klucz":"wartość"}],"object":{"key1":"value1",
 "key2":456,"key3":false,"key4":["a","b","c"],"key5":{"nested_key":"nested_value"}}}
-
 """.strip()
 
 BIG_JSON_PARSED = {
