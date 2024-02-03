@@ -11,8 +11,6 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   build:
