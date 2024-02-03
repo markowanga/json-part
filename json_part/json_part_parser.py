@@ -1,7 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, TypeVar, Tuple, Optional
+from typing import Any, Dict, Optional, Tuple, TypeVar
 
 _T = TypeVar("_T")
 
@@ -102,7 +102,7 @@ class StringParser(Parser):
             # Return the incomplete string without the opening quote
             return ParserResult(str_input[1:], "")
         str_val = str_input[: end + 1]
-        s = str_input[end + 1:]
+        s = str_input[end + 1 :]
         return ParserResult(json.loads(str_val), s)
 
 
