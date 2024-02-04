@@ -22,19 +22,30 @@
         const eventSource = new EventSource('/stream');
         eventSource.onmessage = function (event) {
             const data = JSON.parse(event.data);
-            displayData(data);
+            if (!data.is_finish)
+                displayData(data.value);
+            else {
+                eventSource.close()
+            }
         };
     });
 
     function displayData(data) {
         const bioDataDiv = document.getElementById('bioData');
+        const nationality = data.hasOwnProperty('nationality') ? data.nationality : ""
+        const year_born = data.hasOwnProperty('year_born') ? data.year_born : ""
+        const year_die = data.hasOwnProperty('year_die') ? (data.year_die ? data.year_die : '---') : "";
+        const important_keywords_str = data.hasOwnProperty('important_keywords')
+            ? data.important_keywords.join(', ') : "";
+        const short_bio = data.hasOwnProperty('short_bio') ? data.short_bio : ""
+        const description = data.hasOwnProperty('description') ? data.description : ""
         bioDataDiv.innerHTML = `
-            <p><strong>Nationality:</strong> ${data.nationality || ""}</p>
-            <p><strong>Year Born:</strong> ${data.year_born || ""}</p>
-            <p><strong>Year Died:</strong> ${data.year_die ? data.year_die : '---'}</p>
-            <p><strong>Important Keywords:</strong> ${data.important_keywords.join(', ') || ""}</p>
-            <p><strong>Short Bio:</strong> ${data.short_bio || ""}</p>
-            <p><strong>Description:</strong> ${data.description || ""}</p>
+            <p><strong>Nationality:</strong> ${nationality}</p>
+            <p><strong>Year Born:</strong> ${year_born}</p>
+            <p><strong>Year Died:</strong> ${year_die}</p>
+            <p><strong>Important Keywords:</strong> ${important_keywords_str}</p>
+            <p><strong>Short Bio:</strong> ${short_bio}</p>
+            <p><strong>Description:</strong> ${description}</p>
         `;
     }
 </script>
