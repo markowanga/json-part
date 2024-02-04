@@ -14,6 +14,8 @@ The library code is simple and clear -- requests for contributions,
 or ideas submitted as an Issue, will be met with
 all efforts to create the best possible solution.
 
+![logo.png](logo.png)
+
 ## Features
 
 - **Parse Incomplete JSON:** Effortlessly convert partial JSON
