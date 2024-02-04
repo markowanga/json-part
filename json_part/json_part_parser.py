@@ -1,9 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, TypeVar
-
-_T = TypeVar("_T")
+from typing import Any, Dict, Optional, Tuple
 
 
 @dataclass
@@ -21,36 +19,35 @@ class Parser(ABC):
 class ArrayParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        temp_str = str_input[1:]  # skip starting [
+        temp_str = str_input[1:]  # skip [
         result = []
-        temp_str = temp_str.strip()
+        temp_str = temp_str.lstrip()
         while temp_str:
             if temp_str[0] == "]":
-                temp_str = temp_str[1:].strip()  # skip ending ']'
+                temp_str = temp_str[1:].lstrip()  # skip ]
                 break
             item_result = AnyParser().parse(temp_str)
             res = item_result.value
             temp_str = item_result.rest_of_string
             result.append(res)
-            temp_str = temp_str.strip()
+            temp_str = temp_str.lstrip()
             if temp_str.startswith(","):
-                temp_str = temp_str[1:].strip()
+                temp_str = temp_str[1:].lstrip()
         return ParserResult(result, temp_str)
 
 
 class ObjectParser(Parser):
+
     def parse(self, str_input: str) -> ParserResult:
-        temp_str = str_input[1:]  # skip starting '{'
-        result: Dict[str, Any] = {}
-        temp_str = temp_str.strip()
+        temp_str = str_input[1:]  # skip {
+        result: Dict[str, Optional[Any]] = {}
+        temp_str = temp_str.lstrip()
         while temp_str:
             if temp_str[0] == "}":
-                temp_str = temp_str[1:]  # skip ending '}'
+                temp_str = temp_str[1:]  # skip }
                 break
 
-            key_parse_result = StringParser().parse(temp_str)
-            key = key_parse_result.value
-            temp_str = key_parse_result.rest_of_string.strip()
+            key, temp_str = self.key_parse(temp_str)
 
             if not temp_str:
                 break
@@ -62,29 +59,36 @@ class ObjectParser(Parser):
                 result[key] = None
                 break
 
-            value_parse_result = AnyParser().parse(temp_str)
-            value = value_parse_result.value
-            temp_str = value_parse_result.rest_of_string
+            value, temp_str = self.value_parse(temp_str)
 
             result[key] = value
-            temp_str = temp_str.strip()
-            if temp_str.startswith(","):
-                temp_str = temp_str[1:]
-                temp_str = temp_str.strip()
+            temp_str = self.skip_possible_comma(temp_str.lstrip())
         return ParserResult(result, temp_str)
 
-    def skip_colon(self, str_input: str) -> str:
-        temp_str = str_input.strip()
+    @staticmethod
+    def skip_colon(str_input: str) -> str:
+        temp_str = str_input.lstrip()
         if temp_str[0] != ":":
             raise Exception("No ':' after key")
         temp_str = temp_str[1:]
-        return temp_str.strip()
+        return temp_str.lstrip()
 
-    def skip_possible_comma(self, str_input: str) -> str:
+    @staticmethod
+    def skip_possible_comma(str_input: str) -> str:
         if str_input.startswith(","):
-            return str_input[1:].strip()
+            return str_input[1:].lstrip()
         else:
             return str_input
+
+    @staticmethod
+    def key_parse(str_input: str) -> Tuple[str, str]:
+        key_parse_result = StringParser().parse(str_input)
+        return key_parse_result.value, key_parse_result.rest_of_string.lstrip()
+
+    @staticmethod
+    def value_parse(str_input: str) -> Tuple[Any, str]:
+        value_parse_result = AnyParser().parse(str_input)
+        return value_parse_result.value, value_parse_result.rest_of_string.lstrip()
 
 
 class StringParser(Parser):
@@ -103,13 +107,13 @@ class StringParser(Parser):
 class TrueParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        return ParserResult(False, str_input[4:])
+        return ParserResult(True, str_input[4:])
 
 
 class FalseParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        return ParserResult(True, str_input[5:])
+        return ParserResult(False, str_input[5:])
 
 
 class NullParser(Parser):
@@ -121,11 +125,11 @@ class NullParser(Parser):
 class NumberParser(Parser):
     def parse(self, str_input: str) -> ParserResult:
         i = 0
-        while i < len(str_input) and str_input[i] in "0123456789.-":
+        while i < len(str_input) and str_input[i] in "-.0123456789":
             i += 1
         num_str = str_input[:i]
         s = str_input[i:]
-        if not num_str or num_str.endswith(".") or num_str.endswith("-"):  # TODO
+        if not num_str or num_str.endswith(".") or num_str.endswith("-"):
             return ParserResult(num_str, "")  # Return the incomplete number as is
         num = (
             float(num_str)
@@ -139,7 +143,7 @@ class AnyParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
         parser = self.find_parser(str_input)
-        return parser.parse(str_input.strip())
+        return parser.parse(str_input.lstrip())
 
     @staticmethod
     def find_parser(str_input: str) -> Parser:
@@ -152,13 +156,14 @@ class AnyParser(Parser):
             "n": NullParser(),
         }
         number_parser = NumberParser()
-        for c in "0123456789.-":
+        for c in "-0123456789.":
             parsers[c] = number_parser
-        return parsers[str_input.strip()[0]]
+        return parsers[str_input.lstrip()[0]]
 
 
 class JsonPartParser:
-    def parse(self, s: str) -> Any:
+    @staticmethod
+    def parse(s: str) -> Any:
         if len(s) >= 1:
             result = AnyParser().parse(s)
             return json.loads(json.dumps(result.value))

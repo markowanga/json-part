@@ -11,8 +11,6 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   build:
@@ -23,10 +21,10 @@ jobs:
         python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -38,8 +36,8 @@ jobs:
       - name: Install deps
         run: poetry install -vv
 
-      - name: Python version
-        run: poetry run python --version
-
       - name: Run lint checks
-        run: poetry run poe before_mr
+        run: poetry run poe lint_check
+
+      - name: Run tests
+        run: poetry run poe pytest

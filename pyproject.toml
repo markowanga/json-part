@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "json-part"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Marcin Wątroba <markowanga@gmail.com>"]
 readme = "README.md"
@@ -14,15 +14,23 @@ black = "^24.1.1"
 mypy = "^1.8.0"
 isort = "^5.13.2"
 poethepoet = "^0.24.4"
+pytest = "^8.0.0"
 
+
+
+[tool.poetry.group.sample.dependencies]
+openai = "^1.11.0"
 
 [tool.poe.tasks]
-black = "black --check json_part"
-isort = "isort -c json_part"
-mypy = "mypy --strict json_part"
-black_fix = "black json_part"
-isort_fix = "isort json_part"
-before_mr = ['black', 'isort', 'mypy']
+black = "black --check json_part test sample"
+isort = "isort -c json_part test sample"
+mypy = "mypy --strict json_part test sample"
+pytest = "pytest"
+black_fix = "black json_part test sample"
+isort_fix = "isort json_part test sample"
+lint_fix = ['black_fix', 'isort_fix']
+lint_check = ['black', 'isort', 'mypy']
+before_mr = ['black', 'isort', 'mypy', 'pytest']
 
 
 [build-system]
