@@ -148,9 +148,9 @@ class AnyParser(Parser):
     @staticmethod
     def find_parser(str_input: str) -> Parser:
         parsers: Dict[str, Parser] = {
+            '"': StringParser(),
             "[": ArrayParser(),
             "{": ObjectParser(),
-            '"': StringParser(),
             "t": TrueParser(),
             "f": FalseParser(),
             "n": NullParser(),

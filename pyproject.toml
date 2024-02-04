@@ -20,6 +20,9 @@ pytest = "^8.0.0"
 
 [tool.poetry.group.sample.dependencies]
 openai = "^1.11.0"
+sse-starlette = "^2.0.0"
+fastapi = "^0.109.1"
+asyncio = "^3.4.3"
 
 [tool.poe.tasks]
 black = "black --check json_part test sample"

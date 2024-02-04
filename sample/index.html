@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE Demo</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Biography Data of Iga Świątek</h2>
+    <button id="startBtn" class="btn btn-primary">Start</button>
+    <div id="bioData" class="mt-4">
+        <!-- Dynamic content will be displayed here -->
+    </div>
+</div>
+
+<script>
+    document.getElementById('startBtn').addEventListener('click', function () {
+        document.getElementById('startBtn').remove()
+        const eventSource = new EventSource('/stream');
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            displayData(data);
+        };
+    });
+
+    function displayData(data) {
+        const bioDataDiv = document.getElementById('bioData');
+        bioDataDiv.innerHTML = `
+            <p><strong>Nationality:</strong> ${data.nationality || ""}</p>
+            <p><strong>Year Born:</strong> ${data.year_born || ""}</p>
+            <p><strong>Year Died:</strong> ${data.year_die ? data.year_die : '---'}</p>
+            <p><strong>Important Keywords:</strong> ${data.important_keywords.join(', ') || ""}</p>
+            <p><strong>Short Bio:</strong> ${data.short_bio || ""}</p>
+            <p><strong>Description:</strong> ${data.description || ""}</p>
+        `;
+    }
+</script>
+
+</body>
+</html>
