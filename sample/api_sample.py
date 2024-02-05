@@ -80,18 +80,15 @@ async def get_response_generator() -> AsyncGenerator[ServerSentEvent, None]:
     accumulator = ""
     previous_json = None
     async for it in await get_openai_stream_agenerator():
-        # print(it)
         delta = get_delta_argument(it)
-        # print(delta)
         if delta is not None:
             accumulator += delta
             json = parse_incomplete_json(accumulator)
             if previous_json != json:
-                previous_json = json
                 yield DescriptionEvent(is_finish=False, value=json).to_sse()
+                previous_json = json
         else:
-            yield DescriptionEvent(is_finish=True, value=None).to_sse()
-        # yield DescriptionEvent(is_finish=False, value="json").to_sse()
+            yield DescriptionEvent(is_finish=True, value=previous_json).to_sse()
 
 
 @app.get("/", response_class=HTMLResponse)

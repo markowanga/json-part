@@ -1,5 +1,10 @@
 # json-part
 
+[![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![Python package & deploy](https://github.com/markowanga/json-part/actions/workflows/python-publish.yml/badge.svg)](https://github.com/markowanga/json-part/actions/workflows/python-publish.yml)
+[![PyPI version](https://badge.fury.io/py/json-part.svg)](https://badge.fury.io/py/json-part)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+
 `json-part` is a lightweight Python library designed to parse and
 repair incomplete JSON strings. This library is particularly useful
 for handling streaming JSON data, such as the responses from
