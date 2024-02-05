@@ -2,7 +2,7 @@
 That's the mos simple example, without additional dependencies.
 """
 
-from openai import OpenAI, Stream, AsyncOpenAI, AsyncStream
+from openai import AsyncOpenAI, AsyncStream, OpenAI, Stream
 from openai.types.chat import ChatCompletionChunk
 
 from json_part import parse_incomplete_json
@@ -44,28 +44,14 @@ def get_openai_stream_generator() -> Stream[ChatCompletionChunk]:
         {"role": "system", "content": "Return details about asking person"},
         {"role": "user", "content": "Iga Świątek"},
     ]
-    return client.chat.completions.create(
+    response: Stream[ChatCompletionChunk] = client.chat.completions.create(
         model="gpt-4-0125-preview",
         messages=messages,
         tools=[{"type": "function", "function": FUNCTION}],
         tool_choice="auto",
         stream=True,
     )  # type: ignore
-
-
-async def get_openai_stream_agenerator() -> AsyncStream[ChatCompletionChunk]:
-    client = AsyncOpenAI()
-    messages = [
-        {"role": "system", "content": "Return details about asking person"},
-        {"role": "user", "content": "Iga Świątek"},
-    ]
-    return await client.chat.completions.create(
-        model="gpt-4-0125-preview",
-        messages=messages,
-        tools=[{"type": "function", "function": FUNCTION}],
-        tool_choice="auto",
-        stream=True,
-    )  # type: ignore
+    return response
 
 
 def openai_sample() -> None:
@@ -73,7 +59,10 @@ def openai_sample() -> None:
     json_accumulator = ""
     for it in response:
         if it.choices[0].delta.tool_calls:
-            json_accumulator += it.choices[0].delta.tool_calls[0].function.arguments
+            assert it.choices[0].delta.tool_calls[0].function is not None
+            json_accumulator += (
+                it.choices[0].delta.tool_calls[0].function.arguments or ""
+            )
             print(parse_incomplete_json(json_accumulator))
 
 
