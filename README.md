@@ -80,7 +80,6 @@ Print next values in terminal.
 {'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['car']}
 {'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['car', '']}
 {'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['car', 'transport']}
-
 ...
 ```
 
