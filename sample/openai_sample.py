@@ -1,6 +1,7 @@
 """
 That's the mos simple example, without additional dependencies.
 """
+
 from typing import Optional
 
 from openai import OpenAI, Stream
