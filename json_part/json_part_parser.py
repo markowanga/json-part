@@ -8,6 +8,7 @@ from typing import Any, Dict, Optional, Tuple
 class ParserResult:
     value: Any
     rest_of_string: str
+    hide_result: bool
 
 
 class Parser(ABC):
@@ -29,11 +30,13 @@ class ArrayParser(Parser):
             item_result = AnyParser().parse(temp_str)
             res = item_result.value
             temp_str = item_result.rest_of_string
-            result.append(res)
+            hide_result = item_result.hide_result
+            if not hide_result:
+                result.append(res)
             temp_str = temp_str.lstrip()
             if temp_str.startswith(","):
                 temp_str = temp_str[1:].lstrip()
-        return ParserResult(result, temp_str)
+        return ParserResult(result, temp_str, False)
 
 
 class ObjectParser(Parser):
@@ -48,22 +51,16 @@ class ObjectParser(Parser):
                 break
 
             key, temp_str = self.key_parse(temp_str)
-
             if not temp_str:
                 break
-
             temp_str = self.skip_colon(temp_str)
-
-            # Handle case where value is missing or incomplete
             if not temp_str:
-                result[key] = None
                 break
-
-            value, temp_str = self.value_parse(temp_str)
-
-            result[key] = value
+            value, temp_str, hide_result = self.value_parse(temp_str)
+            if not hide_result:
+                result[key] = value
             temp_str = self.skip_possible_comma(temp_str.lstrip())
-        return ParserResult(result, temp_str)
+        return ParserResult(result, temp_str, False)
 
     @staticmethod
     def skip_colon(str_input: str) -> str:
@@ -86,9 +83,13 @@ class ObjectParser(Parser):
         return key_parse_result.value, key_parse_result.rest_of_string.lstrip()
 
     @staticmethod
-    def value_parse(str_input: str) -> Tuple[Any, str]:
+    def value_parse(str_input: str) -> Tuple[Any, str, bool]:
         value_parse_result = AnyParser().parse(str_input)
-        return value_parse_result.value, value_parse_result.rest_of_string.lstrip()
+        return (
+            value_parse_result.value,
+            value_parse_result.rest_of_string.lstrip(),
+            value_parse_result.hide_result,
+        )
 
 
 class StringParser(Parser):
@@ -98,45 +99,45 @@ class StringParser(Parser):
             end = str_input.find('"', end + 1)
         if end == -1:
             # Return the incomplete string without the opening quote
-            return ParserResult(str_input[1:], "")
+            return ParserResult(str_input[1:], "", False)
         str_val = str_input[: end + 1]
         s = str_input[end + 1 :]
-        return ParserResult(json.loads(str_val), s)
+        return ParserResult(json.loads(str_val), s, False)
 
 
 class TrueParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        return ParserResult(True, str_input[4:])
+        return ParserResult(True, str_input[4:], False)
 
 
 class FalseParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        return ParserResult(False, str_input[5:])
+        return ParserResult(False, str_input[5:], False)
 
 
 class NullParser(Parser):
 
     def parse(self, str_input: str) -> ParserResult:
-        return ParserResult(None, str_input[4:])
+        return ParserResult(None, str_input[4:], False)
 
 
 class NumberParser(Parser):
     def parse(self, str_input: str) -> ParserResult:
         i = 0
-        while i < len(str_input) and str_input[i] in "-.0123456789":
+        while i < len(str_input) and str_input[i] in "-0123456789.":
             i += 1
         num_str = str_input[:i]
         s = str_input[i:]
         if not num_str or num_str.endswith(".") or num_str.endswith("-"):
-            return ParserResult(num_str, "")  # Return the incomplete number as is
+            return ParserResult(num_str, "", True)  # Return the incomplete number as is
         num = (
             float(num_str)
             if "." in num_str or "e" in num_str or "E" in num_str
             else int(num_str)
         )
-        return ParserResult(num, s)
+        return ParserResult(num, s, not s)
 
 
 class AnyParser(Parser):

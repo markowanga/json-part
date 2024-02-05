@@ -1,39 +1,31 @@
 """
 That's the mos simple example, without additional dependencies.
 """
+from typing import Optional
 
-from openai import AsyncOpenAI, AsyncStream, OpenAI, Stream
+from openai import OpenAI, Stream
 from openai.types.chat import ChatCompletionChunk
 
 from json_part import parse_incomplete_json
 
 FUNCTION = {
-    "name": "person_details",
-    "description": "Get the details about person, additional_info: please return fields in original order",
+    "name": "item_invention_details",
+    "description": "Info about invention",
     "parameters": {
         "type": "object",
         "properties": {
-            "nationality": {"type": "string", "description": "Nationality of person"},
-            "year_born": {"type": "number"},
-            "year_die": {"type": "number", "description": "Year of die or null"},
-            "important_keywords": {
+            "year": {"type": "number", "description": "Nationality of person"},
+            "inventor": {"type": "string", "description": "Full name of inventor"},
+            "keywords": {
                 "type": "array",
                 "items": {"type": "string"},
             },
-            "short_bio": {"type": "string", "description": "Short bio"},
             "description": {
                 "type": "string",
-                "description": "Person description",
+                "description": "How it was invented",
             },
         },
-        "required": [
-            "nationality",
-            "year_born",
-            "year_die",
-            "important_keywords",
-            "short_bio",
-            "description",
-        ],
+        "required": ["year", "inventor", "keywords", "description"],
     },
 }
 
@@ -41,8 +33,8 @@ FUNCTION = {
 def get_openai_stream_generator() -> Stream[ChatCompletionChunk]:
     client = OpenAI()
     messages = [
-        {"role": "system", "content": "Return details about asking person"},
-        {"role": "user", "content": "Iga Świątek"},
+        {"role": "system", "content": "Return details about invention"},
+        {"role": "user", "content": "car"},
     ]
     response: Stream[ChatCompletionChunk] = client.chat.completions.create(
         model="gpt-4-0125-preview",
@@ -54,16 +46,26 @@ def get_openai_stream_generator() -> Stream[ChatCompletionChunk]:
     return response
 
 
+def get_delta_argument(chunk: ChatCompletionChunk) -> Optional[str]:
+    if chunk.choices[0].delta.tool_calls:
+        function = chunk.choices[0].delta.tool_calls[0].function
+        assert function is not None
+        return function.arguments
+    else:
+        return None
+
+
 def openai_sample() -> None:
     response = get_openai_stream_generator()
+    previous_value = None
     json_accumulator = ""
     for it in response:
-        if it.choices[0].delta.tool_calls:
-            assert it.choices[0].delta.tool_calls[0].function is not None
-            json_accumulator += (
-                it.choices[0].delta.tool_calls[0].function.arguments or ""
-            )
-            print(parse_incomplete_json(json_accumulator))
+        delta = get_delta_argument(it) or ""
+        json_accumulator += delta
+        new_value = parse_incomplete_json(json_accumulator)
+        if new_value != previous_value:
+            print(new_value)
+            previous_value = new_value
 
 
 if __name__ == "__main__":

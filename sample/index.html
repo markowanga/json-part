@@ -25,6 +25,7 @@
             if (!data.is_finish)
                 displayData(data.value);
             else {
+                console.log("connection SSE closed")
                 eventSource.close()
             }
         };

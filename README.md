@@ -55,6 +55,39 @@ if __name__ == '__main__':
     print(fix_incomplete_json(SAMPLE_2))  # Output: {"status": "o"}
 ```
 
+## Run samples
+
+Samples require `OPENAI_API_KEY` env variable configured
+
+### Terminal sample
+
+Print next values in terminal
+
+```bash
+(json_part) markowanga@MacBook-Pro-Marcin sample % uvicorn api_sample:app          
+{}
+{'year': 1886}
+{'year': 1886, 'inventor': ''}
+{'year': 1886, 'inventor': 'K'}
+{'year': 1886, 'inventor': 'Karl'}
+{'year': 1886, 'inventor': 'Karl Benz'}
+{'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['']}
+```
+
+### Api sample
+
+Website with dynamic fields in report
+
+```bash
+(json_part) markowanga@MacBook-Pro-Marcin sample % cd sample && uvicorn api_sample:app          
+INFO:     Started server process [43425]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+```
+
+And next open http://127.0.0.1:8000 in your browser.
+
 ## Contributing
 
 Contributions to `json-part` are welcome!

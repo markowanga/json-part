@@ -23,11 +23,19 @@ BIG_JSON_PARSED = {
 
 
 def test_number_array_1() -> None:
-    assert parse_incomplete_json("[1, 2, 3") == [1, 2, 3]
+    assert parse_incomplete_json("[1, 2, 3") == [1, 2]
 
 
 def test_number_array_2() -> None:
-    assert parse_incomplete_json("[1, 2, 3, 4.1") == [1, 2, 3, 4.1]
+    assert parse_incomplete_json("[1, 2, 3, 4.1") == [1, 2, 3]
+
+
+def test_number_array_3() -> None:
+    assert parse_incomplete_json("[1, 2, 3, 4.1 ") == [1, 2, 3, 4.1]
+
+
+def test_number_array_4() -> None:
+    assert parse_incomplete_json("[1, 2, 3, 4.1,") == [1, 2, 3, 4.1]
 
 
 def test_bool_none_array_1() -> None:
@@ -42,6 +50,16 @@ def test_object_1() -> None:
 def test_object_2() -> None:
     part = """{"count": 2, "ddd": "frevf"""
     assert parse_incomplete_json(part) == {"count": 2, "ddd": "frevf"}
+
+
+def test_object_3() -> None:
+    part = """{"count": 2, "ddd": 44"""
+    assert parse_incomplete_json(part) == {"count": 2}
+
+
+def test_object_4() -> None:
+    part = """{"count": 2, "values": 44,"""
+    assert parse_incomplete_json(part) == {"count": 2, "values": 44}
 
 
 def test_big_json() -> None:

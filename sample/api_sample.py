@@ -4,7 +4,6 @@ from typing import Any, AsyncGenerator, Optional
 from fastapi import FastAPI
 from openai import AsyncOpenAI, AsyncStream
 from openai.types.chat import ChatCompletionChunk
-from openai_sample import FUNCTION
 from pydantic import BaseModel
 from sse_starlette import EventSourceResponse, ServerSentEvent
 from starlette.responses import HTMLResponse
@@ -13,10 +12,43 @@ from json_part import parse_incomplete_json
 
 app = FastAPI()
 
+FUNCTION = {
+    "name": "person_details",
+    "description": "Get the details about person, additional_info: please return fields in original order",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "nationality": {"type": "string", "description": "Nationality of person"},
+            "year_born": {"type": "number"},
+            "year_die": {"type": "number", "description": "Year of die or null"},
+            "important_keywords": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "short_bio": {"type": "string", "description": "Short bio"},
+            "description": {
+                "type": "string",
+                "description": "Person description",
+            },
+        },
+        "required": [
+            "nationality",
+            "year_born",
+            "year_die",
+            "important_keywords",
+            "short_bio",
+            "description",
+        ],
+    },
+}
+
 
 class DescriptionEvent(BaseModel):
     is_finish: bool
     value: Optional[Any]
+
+    def to_sse(self) -> ServerSentEvent:
+        return ServerSentEvent(self.json())
 
 
 async def get_openai_stream_agenerator() -> AsyncStream[ChatCompletionChunk]:
@@ -35,29 +67,38 @@ async def get_openai_stream_agenerator() -> AsyncStream[ChatCompletionChunk]:
     return response
 
 
+def get_delta_argument(chunk: ChatCompletionChunk) -> Optional[str]:
+    if chunk.choices[0].delta.tool_calls:
+        function = chunk.choices[0].delta.tool_calls[0].function
+        assert function is not None
+        return function.arguments
+    else:
+        return None
+
+
 async def get_response_generator() -> AsyncGenerator[ServerSentEvent, None]:
     accumulator = ""
     previous_json = None
     async for it in await get_openai_stream_agenerator():
-        if it.choices[0].delta.tool_calls:
-            function = it.choices[0].delta.tool_calls[0].function
-            assert function is not None
-            accumulator += function.arguments or ""
+        # print(it)
+        delta = get_delta_argument(it)
+        # print(delta)
+        if delta is not None:
+            accumulator += delta
             json = parse_incomplete_json(accumulator)
             if previous_json != json:
                 previous_json = json
-                yield ServerSentEvent(
-                    DescriptionEvent(is_finish=False, value=json).json()
-                )
+                yield DescriptionEvent(is_finish=False, value=json).to_sse()
         else:
-            yield ServerSentEvent(DescriptionEvent(is_finish=True, value=None).json())
-
-
-@app.get("/stream")
-async def message_stream() -> EventSourceResponse:
-    return EventSourceResponse(get_response_generator())
+            yield DescriptionEvent(is_finish=True, value=None).to_sse()
+        # yield DescriptionEvent(is_finish=False, value="json").to_sse()
 
 
 @app.get("/", response_class=HTMLResponse)
 async def read_items() -> str:
     return Path("index.html").read_text()
+
+
+@app.get("/stream")
+async def message_stream() -> EventSourceResponse:
+    return EventSourceResponse(get_response_generator())
