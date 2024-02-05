@@ -64,7 +64,7 @@ Samples require `OPENAI_API_KEY` env variable configured
 Print next values in terminal
 
 ```bash
-(json_part) markowanga@MacBook-Pro-Marcin sample % uvicorn api_sample:app          
+(json_part) markowanga@MacBook-Pro-Marcin sample % python sample/openai_sample.py          
 {}
 {'year': 1886}
 {'year': 1886, 'inventor': ''}
@@ -72,6 +72,10 @@ Print next values in terminal
 {'year': 1886, 'inventor': 'Karl'}
 {'year': 1886, 'inventor': 'Karl Benz'}
 {'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['']}
+{'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['car']}
+{'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['car', '']}
+{'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['car', 'transport']}
+
 ...
 ```
 
