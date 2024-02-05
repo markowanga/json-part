@@ -72,6 +72,7 @@ Print next values in terminal
 {'year': 1886, 'inventor': 'Karl'}
 {'year': 1886, 'inventor': 'Karl Benz'}
 {'year': 1886, 'inventor': 'Karl Benz', 'keywords': ['']}
+...
 ```
 
 ### Api sample
