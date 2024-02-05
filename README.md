@@ -57,11 +57,11 @@ if __name__ == '__main__':
 
 ## Run samples
 
-Samples require `OPENAI_API_KEY` env variable configured
+Samples require `OPENAI_API_KEY` env variable configured, and installed dependencies (command `poetry install`).
 
 ### Terminal sample
 
-Print next values in terminal
+Print next values in terminal.
 
 ```bash
 (json_part) markowanga@MacBook-Pro-Marcin sample % python sample/openai_sample.py          
@@ -81,7 +81,7 @@ Print next values in terminal
 
 ### Api sample
 
-Website with dynamic fields in report
+Website with dynamic fields in report.
 
 ```bash
 (json_part) markowanga@MacBook-Pro-Marcin sample % cd sample && uvicorn api_sample:app          
